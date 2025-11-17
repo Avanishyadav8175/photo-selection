@@ -25,10 +25,17 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
           .find({ _id: { $in: selections.map(s => s.imageId) } })
           .toArray();
 
+        // Add Cloudinary URLs
+        const { getPublicUrl } = await import('@/lib/cloudinary');
+        const imagesWithUrls = images.map(img => ({
+          ...img,
+          thumbUrl: getPublicUrl(img.gcsPath),
+        }));
+
         return {
           ...client,
           selectionsCount: selections.length,
-          selections: images,
+          selections: imagesWithUrls,
         };
       })
     );

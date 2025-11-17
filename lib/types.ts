@@ -17,7 +17,8 @@ export interface Folder {
   createdBy: ObjectId;
   createdAt: Date;
   sizeBytes: number;
-  status: 'active' | 'expired' | 'archived';
+  status: 'active' | 'expired' | 'archived' | 'deleted';
+  deletedAt?: Date;
 }
 
 export interface Image {
@@ -29,6 +30,8 @@ export interface Image {
   mimeType: string;
   sizeBytes: number;
   createdAt: Date;
+  status?: 'active' | 'deleted';
+  deletedAt?: Date;
 }
 
 export interface OTP {
@@ -67,4 +70,67 @@ export interface DownloadLog {
   downloadAt: Date;
   ip: string;
   userAgent: string;
+}
+
+// Booking Management Types
+export interface BookingEvent {
+  name: string;
+  date: string;
+  time: 'Day' | 'Night';
+  services: string[]; // ['Photo', 'Video', 'Drone']
+  team: string[];
+}
+
+export interface Payment {
+  id: number;
+  amount: number;
+  date: string;
+  mode: string;
+  note: string;
+}
+
+export interface Expense {
+  id: number;
+  desc: string;
+  amount: number;
+}
+
+export interface Booking {
+  _id?: ObjectId;
+  id: number;
+  name: string;
+  mobile: string;
+  whatsapp?: string;
+  customerAddress?: string;
+  venueAddress?: string;
+  eventType: string;
+  mainEventDate: string;
+  events: BookingEvent[];
+  total: number;
+  due: number;
+  note?: string;
+  payments: Payment[];
+  expenses: Expense[];
+  createdAt: Date;
+  status: 'active' | 'deleted';
+}
+
+export interface ManpowerRates {
+  tilak?: number;
+  haldi?: number;
+  wedding?: number;
+  engagement?: number;
+  birthday?: number;
+  mundan?: number;
+}
+
+export interface Manpower {
+  _id?: ObjectId;
+  id: number;
+  name: string;
+  whatsapp?: string;
+  specialty: string;
+  rates: ManpowerRates;
+  createdAt: Date;
+  status: 'active' | 'deleted';
 }

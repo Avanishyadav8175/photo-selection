@@ -5,6 +5,11 @@ import { Image } from '@/lib/types';
 import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Route segment config for Next.js 14
+export const maxDuration = 300; // 5 minutes timeout
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const token = req.headers.get('authorization')?.replace('Bearer ', '');
@@ -42,14 +47,17 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       mimeType: file.type,
       sizeBytes: file.size,
       createdAt: new Date(),
+      status: 'active',
     };
 
     const insertResult = await db.collection<Image>('images').insertOne(image);
 
+    console.log('Image uploaded:', result.public_id, result.secure_url);
     return NextResponse.json({
       success: true,
       imageId: insertResult.insertedId,
-      url: result.secure_url
+      url: result.secure_url,
+      publicId: result.public_id
     });
   } catch (error) {
     console.error('Upload error:', error);

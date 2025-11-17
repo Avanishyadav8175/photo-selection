@@ -1,4 +1,5 @@
 import { verifyToken } from '@/lib/auth';
+import { getPublicUrl } from '@/lib/cloudinary';
 import { getDb } from '@/lib/db';
 import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
@@ -16,19 +17,16 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         folderId: new ObjectId(params.id),
         status: { $ne: 'deleted' }
       })
-      .sort({ createdAt: 1 })
       .toArray();
 
-    // Add Cloudinary URLs
-    const { getPublicUrl } = await import('@/lib/cloudinary');
-    const imagesWithUrls = images.map(img => ({
-      ...img,
-      thumbUrl: getPublicUrl(img.gcsPath),
+    const imageUrls = images.map(img => ({
+      filename: img.filename,
+      url: getPublicUrl(img.gcsPath),
     }));
 
-    console.log('Images with URLs:', imagesWithUrls.length, imagesWithUrls[0]?.thumbUrl);
-    return NextResponse.json({ images: imagesWithUrls });
+    return NextResponse.json({ images: imageUrls });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch images' }, { status: 500 });
+    console.error('Download all error:', error);
+    return NextResponse.json({ error: 'Failed to generate download URLs' }, { status: 500 });
   }
 }

@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid OTP' }, { status: 400 });
     }
 
+    // Allow multiple clients with same OTP - check by phone only
     let client = await db.collection<Client>('clients').findOne({
       folderId: folder._id,
       phone,
@@ -46,6 +47,12 @@ export async function POST(req: NextRequest) {
       };
       const result = await db.collection<Client>('clients').insertOne(newClient);
       client = { ...newClient, _id: result.insertedId };
+    } else {
+      // Update name if client exists (in case they want to update it)
+      await db.collection('clients').updateOne(
+        { _id: client._id },
+        { $set: { name } }
+      );
     }
 
     return NextResponse.json({ clientToken: client.token, clientId: client._id });

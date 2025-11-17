@@ -53,7 +53,10 @@ export async function GET(req: NextRequest) {
 
     const db = await getDb();
     const folders = await db.collection<Folder>('folders')
-      .find({ createdBy: new ObjectId(payload.adminId) })
+      .find({
+        createdBy: new ObjectId(payload.adminId),
+        status: { $ne: 'deleted' }
+      })
       .sort({ createdAt: -1 })
       .toArray();
 
