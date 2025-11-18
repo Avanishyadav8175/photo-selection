@@ -7,21 +7,43 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Check if current page is login page
+  const isLoginPage = pathname === '/admin/login';
 
   useEffect(() => {
+    // Skip auth check for login page
+    if (isLoginPage) {
+      setIsLoading(false);
+      return;
+    }
+
     const token = localStorage.getItem('adminToken');
     if (!token) {
       router.push('/admin/login');
     } else {
       setIsAuthenticated(true);
     }
-  }, [router]);
+    setIsLoading(false);
+  }, [router, isLoginPage]);
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     router.push('/admin/login');
   };
 
+  // Show login page without sidebar
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return null;
+  }
+
+  // Redirect if not authenticated
   if (!isAuthenticated) {
     return null;
   }
@@ -49,8 +71,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               key={item.href}
               href={item.href}
               className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${pathname.startsWith(item.href)
-                  ? 'bg-white text-indigo-600 shadow-lg'
-                  : 'text-white hover:bg-indigo-500'
+                ? 'bg-white text-indigo-600 shadow-lg'
+                : 'text-white hover:bg-indigo-500'
                 }`}
             >
               <span className="text-2xl">{item.icon}</span>
