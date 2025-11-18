@@ -97,7 +97,7 @@ async function fetchImageWithTimeout(
 
     // Read the response with progress tracking
     const reader = response.body.getReader();
-    const chunks: Uint8Array[] = [];
+    const chunks: number[] = [];
     let receivedLength = 0;
 
     while (true) {
@@ -105,16 +105,20 @@ async function fetchImageWithTimeout(
 
       if (done) break;
 
-      chunks.push(value);
-      receivedLength += value.length;
+      if (value) {
+        // Convert Uint8Array to regular array
+        chunks.push(...Array.from(value));
+        receivedLength += value.length;
 
-      if (onProgress && total > 0) {
-        onProgress((receivedLength / total) * 100);
+        if (onProgress && total > 0) {
+          onProgress((receivedLength / total) * 100);
+        }
       }
     }
 
-    // Combine chunks into a single blob
-    const blob = new Blob(chunks, {
+    // Create blob from chunks
+    const uint8Array = new Uint8Array(chunks);
+    const blob = new Blob([uint8Array], {
       type: response.headers.get('content-type') || 'image/jpeg',
     });
 

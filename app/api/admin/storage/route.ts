@@ -2,6 +2,8 @@ import { verifyToken } from '@/lib/auth';
 import { formatBytes, getStorageUsage } from '@/lib/cloudinary';
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const token = req.headers.get('authorization')?.replace('Bearer ', '');
