@@ -112,7 +112,9 @@ export interface Booking {
   payments: Payment[];
   expenses: Expense[];
   createdAt: Date;
-  status: 'active' | 'deleted';
+  status: 'active' | 'cancelled' | 'deleted';
+  cancelledAt?: Date;
+  cancellationReason?: string;
 }
 
 export interface ManpowerRates {
