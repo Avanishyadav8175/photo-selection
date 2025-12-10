@@ -38,7 +38,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       { $set: { publicToken } }
     );
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://photo-selection-d9ny.vercel.app';
     const clientLink = `${appUrl}/f/${publicToken}`;
 
     return NextResponse.json({ otp, clientLink, expiresAt: otpDoc.expiresAt });
