@@ -17,6 +17,21 @@ interface Booking {
   cancellationReason?: string;
 }
 
+interface MonthData {
+  active: number;
+  cancelled: number;
+  revenue: number;
+  lostRevenue: number;
+}
+
+interface MonthlyData {
+  month: string;
+  active: number;
+  cancelled: number;
+  revenue: number;
+  lostRevenue: number;
+}
+
 export default function BookingAnalyticsPage() {
   const router = useRouter();
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
@@ -84,8 +99,8 @@ export default function BookingAnalyticsPage() {
   const cancellationRate = totalBookings > 0 ? (cancelledBookings.length / totalBookings) * 100 : 0;
 
   // Monthly breakdown
-  const getMonthlyData = () => {
-    const months = {};
+  const getMonthlyData = (): MonthlyData[] => {
+    const months: { [key: string]: MonthData } = {};
 
     [...allBookings, ...cancelledBookings].forEach(booking => {
       const month = new Date(booking.mainEventDate).toLocaleDateString('en-US', {
